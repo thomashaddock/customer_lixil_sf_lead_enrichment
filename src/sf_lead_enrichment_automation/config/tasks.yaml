@@ -1,0 +1,70 @@
+---
+scan_for_new_leads_in_salesforce:
+  agent: lead_ingestion_agent
+  description: |
+    Search Salesforce for all leads with Lead Status = ''New'' that need
+    processing. Use the salesforce_search_records_lead tool with SOQL query: 
+    SELECT Id, Name, Email, State, Phone, Lead_Status__c, CreatedDate, Owner.Alias, 
+    Company, Company_Size__c, Annual_Revenue__c, Industry, Website, Title, Lead_Score__c, crew_enrichment__c 
+    FROM Lead WHERE Lead_Status__c = ''New''. 
+    LIMIT 1;
+
+    Limit the number of leads to 1 for testing purposes.
+    
+    Extract all available field data and 
+    identify which fields are empty and need enrichment. IMPORTANT: Count the number of leads found 
+    and print a message like "Found X leads with status New" at the beginning of your response. 
+    Return structured data with lead IDs for downstream processing.
+  expected_output: |
+    A structured JSON list of leads with status ''New'' from Salesforce,
+    containing all available field data: Id, Name, State, Phone, Email, Lead_Status__c, 
+    CreatedDate, Owner.Alias, Company, Company_Size__c, Annual_Revenue__c, Industry, 
+    Website, Title, Lead_Score__c, crew_enrichment__c. Include lead IDs and identify which fields are empty 
+    and need enrichment. Start your response with a count message like "Found X leads with status New".
+
+# enrich_missing_lead_fields:
+#   agent: lead_enrichment_agent
+#   description: |
+#     For each lead with status ''New'', research and populate any empty fields that need enrichment.
+    
+#     DO NOT research or overwrite critical fields like Name or Email unless they are empty.
+
+#     Focus on the personal data first and then the company data.
+#     Use multiple sources to ensure accuracy of the data.
+#   expected_output: |
+#     An enriched JSON structure for each lead containing original fields and newly researched values for empty fields.
+#     Include data sources and confidence levels.
+#     Mark which fields were successfully enriched.
+  
+#   context:
+#   - scan_for_new_leads_in_salesforce
+
+# validate_enriched_lead_data:
+#   agent: qa_data_verification_agent
+#   description: |
+#     Validate the accuracy of enriched data for leads.
+#     Cross-reference information from multiple sources and verify data consistency.
+#     Apply quality scoring to enriched data and flag any inconsistent information. 
+#   expected_output: |
+#     A validated JSON structure with quality-verified enriched data
+#     for each lead. Include validation scores for any enriched fields.
+  
+#   context:
+#   - enrich_missing_lead_fields
+
+# update_leads_and_mark_as_reviewed:
+#   description: 'Update Salesforce leads with verified enriched data using salesforce_update_record_lead tool.
+#     For each lead: 1) Update only empty fields with enriched data. 2) Set crew_enrichment__c field to current datetime. 
+#     3) Change Lead_Status__c from ''New'' to ''Reviewed''. CRITICAL: Never overwrite existing Name field. 
+#     IMPORTANT: For custom fields, use the additionalFields parameter with JSON format:
+#     additionalFields: {"Annual_Revenue__c": "enriched_value", "Company_Size__c": "enriched_value", 
+#     "crew_enrichment__c": "current_datetime", "Lead_Score__c": "enriched_value", "Lead_Status__c": "Reviewed"}. 
+#     Standard fields (Email, Industry, Website, Title) can be updated directly. 
+#     Implement error handling and create audit logs of all updates.'
+#   expected_output: 'A completion report for each processed lead showing: fields updated with new values, 
+#     fields preserved (especially Name), Lead_Status__c changed from ''New'' to ''Reviewed'', 
+#     crew_enrichment__c timestamp set, any errors encountered, and before/after comparison. 
+#     Confirm that all processed leads now have status ''Reviewed'' and enrichment timestamp.'
+#   agent: salesforce_integration_agent
+#   context:
+#   - validate_enriched_lead_data

@@ -1,0 +1,76 @@
+# OS/macOS
+.DS_Store
+
+# Virtual environments and environment files
+.venv/
+venv/
+ENV/
+env/
+.env
+.env.*
+.envrc
+
+# Python bytecode and cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Build artifacts
+build/
+dist/
+.eggs/
+*.egg-info/
+*.egg
+pip-wheel-metadata/
+
+# Testing and coverage
+.pytest_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.nox/
+.tox/
+.hypothesis/
+
+# Type checking and lint caches
+.mypy_cache/
+.pyre/
+.pytype/
+.ruff_cache/
+
+# IDE/editor
+.vscode/
+.idea/
+*.code-workspace
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Logs and temp files
+*.log
+logs/
+.cache/
+tmp/
+temp/
+
+# Databases
+*.sqlite
+*.sqlite3
+*.db
+
+# CrewAI and LLM caches
+.crewai/
+crewai_cache/
+.openai/
+
+# uv (Python packaging/build tool)
+# Keep uv.lock committed
+.uv/
+
+# Knowledge base files are versioned by default; ignore selectively if needed
+# knowledge/*.tmp
+
+.env
+.env
+.env
