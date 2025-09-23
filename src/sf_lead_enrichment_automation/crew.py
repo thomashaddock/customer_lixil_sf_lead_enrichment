@@ -32,14 +32,14 @@ class SfLeadEnrichmentAutomationCrew:
             inject_date=True,
         )
     
-    # @agent
-    # def lead_enrichment_agent(self) -> Agent:
-    #     return Agent(
-    #         config=self.agents_config["lead_enrichment_agent"],
-    #         tools=[
-	# 			SerperDevTool(n_results=1), ScrapeWebsiteTool()
-    #         ],
-    #     )
+    @agent
+    def lead_enrichment_agent(self) -> Agent:
+        return Agent(
+            config=self.agents_config["lead_enrichment_agent"],
+            tools=[
+				SerperDevTool(n_results=1), ScrapeWebsiteTool()
+            ],
+        )
     
     # @agent
     # def qa_data_verification_agent(self) -> Agent:
@@ -89,11 +89,11 @@ class SfLeadEnrichmentAutomationCrew:
             config=self.tasks_config["scan_for_new_leads_in_salesforce"],
         )
     
-    # @task
-    # def enrich_missing_lead_fields(self) -> Task:
-    #     return Task(
-    #         config=self.tasks_config["enrich_missing_lead_fields"],
-    #     )
+    @task
+    def enrich_missing_lead_fields(self) -> Task:
+        return Task(
+            config=self.tasks_config["enrich_missing_lead_fields"],
+        )
     
     # @task
     # def validate_enriched_lead_data(self) -> Task:
@@ -118,7 +118,7 @@ class SfLeadEnrichmentAutomationCrew:
             tasks=self.tasks,  # Automatically created by the @task decorator
             process=Process.sequential,
             verbose=True,
-            tracing=True,
+            tracing=True,            
         )
 
     def _load_response_format(self, name):

@@ -2,42 +2,80 @@
 scan_for_new_leads_in_salesforce:
   agent: lead_ingestion_agent
   description: |
-    Search Salesforce for all leads with Lead Status = ''New'' that need
-    processing. Use the salesforce_search_records_lead tool with SOQL query: 
-    SELECT Id, Name, Email, State, Phone, Lead_Status__c, CreatedDate, Owner.Alias, 
-    Company, Company_Size__c, Annual_Revenue__c, Industry, Website, Title, Lead_Score__c, crew_enrichment__c 
-    FROM Lead WHERE Lead_Status__c = ''New''. 
-    LIMIT 1;
+    Scan Salesforce for leads with status `New` that are ready for enrichment.
 
-    Limit the number of leads to 1 for testing purposes.
-    
-    Extract all available field data and 
-    identify which fields are empty and need enrichment. IMPORTANT: Count the number of leads found 
-    and print a message like "Found X leads with status New" at the beginning of your response. 
-    Return structured data with lead IDs for downstream processing.
+    This task identifies incoming leads from the Lixil Salesforce environment and prepares 
+    a single lead record for downstream enrichment. It extracts all available lead fields 
+    relevant to the Crew AI enrichment workflow. The system should query Salesforce for 
+    leads with `Lead Status = New`, and return a maximum of one record for testing.
+
+    For each lead found:
+    - Extract the following fields:
+        - Name
+        - Title
+        - Email
+        - Phone Number
+        - Role
+        - Industry
+        - Company Name
+        - Company Address
+        - Website
+        - Lead Source Site
+        - Annual Revenue
+        - Annual Number of Homes
+        - Score
+
+    - Any missing or unpopulated fields should be returned explicitly with a `null` value.
+    - The structured output should preserve the expected schema so it can be passed directly to the next enrichment agent.
+
   expected_output: |
-    A structured JSON list of leads with status ''New'' from Salesforce,
-    containing all available field data: Id, Name, State, Phone, Email, Lead_Status__c, 
-    CreatedDate, Owner.Alias, Company, Company_Size__c, Annual_Revenue__c, Industry, 
-    Website, Title, Lead_Score__c, crew_enrichment__c. Include lead IDs and identify which fields are empty 
-    and need enrichment. Start your response with a count message like "Found X leads with status New".
+    A structured JSON array containing a single lead object with status `New`.
 
-# enrich_missing_lead_fields:
-#   agent: lead_enrichment_agent
-#   description: |
-#     For each lead with status ''New'', research and populate any empty fields that need enrichment.
-    
-#     DO NOT research or overwrite critical fields like Name or Email unless they are empty.
+    Each object includes:
+    - `lead_id`: the Salesforce ID for the lead
+    - All 13 lead fields as defined above
+    - Fields that are empty in Salesforce are returned as `null`
 
-#     Focus on the personal data first and then the company data.
-#     Use multiple sources to ensure accuracy of the data.
-#   expected_output: |
-#     An enriched JSON structure for each lead containing original fields and newly researched values for empty fields.
-#     Include data sources and confidence levels.
-#     Mark which fields were successfully enriched.
-  
-#   context:
-#   - scan_for_new_leads_in_salesforce
+    The response should begin with a count message:
+    "Found 1 lead with status 'New'"
+
+
+enrich_missing_lead_fields:
+  agent: lead_enrichment_agent
+  description: |
+    For each lead record received with status `New`, identify and enrich any missing fields using online research.
+
+    Use the following fields from the input JSON:
+      - Name
+      - Title
+      - Email
+      - Phone Number
+      - Role
+      - Industry
+      - Company Name
+      - Company Address
+      - Website
+      - Lead Source Site
+      - Annual Revenue
+      - Annual Number of Homes
+      - Score
+
+    Only enrich fields that are `null` or missing. Do not overwrite populated fields unless explicitly instructed.
+
+    Prioritize personal data enrichment first (e.g., Role, Industry, Title), followed by company-level details (e.g., Website, Revenue, Company Address).
+
+    Use tools such as SERPR API and browser search to retrieve data. Validate across multiple sources where possible.
+
+  expected_output: |
+    A structured JSON object representing the enriched lead, with:
+    - Original lead fields preserved
+    - Missing fields populated with new data
+    - A `data_sources` map showing URLs or sources used per enriched field
+    - A `confidence_score` or enrichment status per field
+
+    Fields not enriched remain `null`.
+    This enriched lead object will be passed to the next agent for validation.
+
 
 # validate_enriched_lead_data:
 #   agent: qa_data_verification_agent

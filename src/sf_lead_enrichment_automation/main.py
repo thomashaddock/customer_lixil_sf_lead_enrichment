@@ -7,52 +7,32 @@ from typing import Dict, Any
 
 from sf_lead_enrichment_automation.crew import SfLeadEnrichmentAutomationCrew
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler('sf_lead_enrichment.log'),
-        logging.StreamHandler()
-    ]
-)
-logger = logging.getLogger(__name__)
+# # Configure logging
+# logging.basicConfig(
+#     level=logging.INFO,
+#     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+#     handlers=[
+#         logging.FileHandler('sf_lead_enrichment.log'),
+#         logging.StreamHandler()
+#     ]
+# )
+# logger = logging.getLogger(__name__)
 
 def run():
     """
     Run the crew to process new leads in Salesforce.
     """
-    logger.info("Starting Salesforce Lead Enrichment Automation")
-    
-    # Validate environment variables
-    if not os.getenv("CREWAI_ENTERPRISE_TOOLS_KEY"):
-        logger.error("CREWAI_ENTERPRISE_TOOLS_KEY environment variable is required")
-        raise ValueError("CREWAI_ENTERPRISE_TOOLS_KEY environment variable is required")
     
     inputs = {
     }
     
     try:
-        crew = SfLeadEnrichmentAutomationCrew()
-        
-        # Enable verbose logging for debugging
-        logger.info("Starting crew execution with verbose logging...")
-        result = crew.crew().kickoff(inputs=inputs)
-        
-        logger.info("Lead enrichment process completed successfully")
-        logger.info(f"Processing result: {result}")
-        
-        # Log detailed results for debugging
-        if hasattr(result, 'raw'):
-            logger.info(f"Raw result: {result.raw}")
-        
+        crew = SfLeadEnrichmentAutomationCrew()       
+        result = crew.crew().kickoff(inputs=inputs)       
         return result
         
     except Exception as e:
-        logger.error(f"Error during lead enrichment process: {str(e)}")
-        logger.error(f"Exception type: {type(e).__name__}")
         import traceback
-        logger.error(f"Traceback: {traceback.format_exc()}")
         raise
 
 
