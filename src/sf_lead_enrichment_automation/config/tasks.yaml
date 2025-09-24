@@ -106,24 +106,38 @@ update_leads_and_mark_as_reviewed:
   description: |
     Update Salesforce with validated enriched lead data.
 
-    For each lead received:
+    For each lead:
     - Only update fields that are currently empty.
-    - Never overwrite the `Name` field under any circumstances.
+    - Never overwrite the `Name` field.
     - Set the `crew_enrichment__c` field to the current datetime.
     - Change `Lead_Status__c` from `New` to `Reviewed`.
 
-    Use the appropriate parameters for standard and custom fields:
-    - Standard fields (e.g., Email, Industry, Website, Title) can be updated directly.
-    - Custom fields (e.g., Annual_Revenue__c, Company_Size__c, Lead_Score__c) should be passed via `additionalFields`.
+    Use the following write-back strategy:
+    - Standard fields that can be updated directly:
+        - Title
+        - Email
+        - Phone Number
+        - Industry
+        - Website
+    - Custom fields that must be passed via `additionalFields`:
+        - Role__c
+        - Annual_Revenue__c
+        - Annual_Number_of_Homes__c
+        - Company_Address__c
+        - Lead_Source_Site__c
+        - Score__c
+        - crew_enrichment__c
+        - Lead_Status__c
 
-    Implement strict error handling and log every update action for auditing. Ensure that enriched data does not overwrite existing values unless explicitly allowed.
+    Implement full error handling, rollback if necessary, and create an audit log for each update. Ensure that enriched data never overwrites valid existing data unless explicitly allowed.
 
   expected_output: |
     A structured report per processed lead containing:
     - List of fields updated and their new values
-    - Fields that were preserved (especially Name)
+    - List of fields preserved (especially Name)
     - Confirmation that `Lead_Status__c` was changed to `Reviewed`
-    - Timestamp in `crew_enrichment__c`
+    - Timestamp recorded in `crew_enrichment__c`
     - Any errors or exceptions encountered
-    - A before/after comparison snapshot of the lead record
+    - Before/after comparison snapshot of the lead
+
 
