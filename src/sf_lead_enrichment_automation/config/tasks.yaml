@@ -27,6 +27,8 @@ scan_for_new_leads_in_salesforce:
 
     - Any missing or unpopulated fields should be returned explicitly with a `null` value.
     - The structured output should preserve the expected schema so it can be passed directly to the next enrichment agent.
+    
+    - IMPORTANT: ONLY ATTEMPT 1 RECORD AT THIS TIME. 
 
   expected_output: |
     A structured JSON array containing a single lead object with status `New`.
@@ -77,32 +79,51 @@ enrich_missing_lead_fields:
     This enriched lead object will be passed to the next agent for validation.
 
 
-# validate_enriched_lead_data:
-#   agent: qa_data_verification_agent
-#   description: |
-#     Validate the accuracy of enriched data for leads.
-#     Cross-reference information from multiple sources and verify data consistency.
-#     Apply quality scoring to enriched data and flag any inconsistent information. 
-#   expected_output: |
-#     A validated JSON structure with quality-verified enriched data
-#     for each lead. Include validation scores for any enriched fields.
-  
-#   context:
-#   - enrich_missing_lead_fields
+validate_enriched_lead_data:
+  agent: qa_data_verification_agent
+  description: |
+    Review enriched lead records and verify the accuracy of each populated field.
 
-# update_leads_and_mark_as_reviewed:
-#   description: 'Update Salesforce leads with verified enriched data using salesforce_update_record_lead tool.
-#     For each lead: 1) Update only empty fields with enriched data. 2) Set crew_enrichment__c field to current datetime. 
-#     3) Change Lead_Status__c from ''New'' to ''Reviewed''. CRITICAL: Never overwrite existing Name field. 
-#     IMPORTANT: For custom fields, use the additionalFields parameter with JSON format:
-#     additionalFields: {"Annual_Revenue__c": "enriched_value", "Company_Size__c": "enriched_value", 
-#     "crew_enrichment__c": "current_datetime", "Lead_Score__c": "enriched_value", "Lead_Status__c": "Reviewed"}. 
-#     Standard fields (Email, Industry, Website, Title) can be updated directly. 
-#     Implement error handling and create audit logs of all updates.'
-#   expected_output: 'A completion report for each processed lead showing: fields updated with new values, 
-#     fields preserved (especially Name), Lead_Status__c changed from ''New'' to ''Reviewed'', 
-#     crew_enrichment__c timestamp set, any errors encountered, and before/after comparison. 
-#     Confirm that all processed leads now have status ''Reviewed'' and enrichment timestamp.'
-#   agent: salesforce_integration_agent
-#   context:
-#   - validate_enriched_lead_data
+    Cross-reference enriched values against source data and look for inconsistencies, 
+    mismatches, or signs of low-confidence enrichment. For each enriched field:
+    - Confirm whether the value is valid and aligns with external data.
+    - Assign a quality or confidence score.
+    - Flag fields that appear unreliable or conflict with verified sources.
+
+    Ensure all required fields are populated and valid before allowing the record to proceed to the update stage.
+
+  expected_output: |
+    A structured JSON object representing the validated lead, including:
+    - All enriched fields with their final values
+    - A `validation_score` or `status` per field
+    - A list of any fields flagged for review or correction
+
+    This validated record will be passed to the update agent.
+
+
+update_leads_and_mark_as_reviewed:
+  agent: salesforce_integration_agent
+  description: |
+    Update Salesforce with validated enriched lead data.
+
+    For each lead received:
+    - Only update fields that are currently empty.
+    - Never overwrite the `Name` field under any circumstances.
+    - Set the `crew_enrichment__c` field to the current datetime.
+    - Change `Lead_Status__c` from `New` to `Reviewed`.
+
+    Use the appropriate parameters for standard and custom fields:
+    - Standard fields (e.g., Email, Industry, Website, Title) can be updated directly.
+    - Custom fields (e.g., Annual_Revenue__c, Company_Size__c, Lead_Score__c) should be passed via `additionalFields`.
+
+    Implement strict error handling and log every update action for auditing. Ensure that enriched data does not overwrite existing values unless explicitly allowed.
+
+  expected_output: |
+    A structured report per processed lead containing:
+    - List of fields updated and their new values
+    - Fields that were preserved (especially Name)
+    - Confirmation that `Lead_Status__c` was changed to `Reviewed`
+    - Timestamp in `crew_enrichment__c`
+    - Any errors or exceptions encountered
+    - A before/after comparison snapshot of the lead record
+

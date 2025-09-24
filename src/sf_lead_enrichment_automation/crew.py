@@ -41,46 +41,46 @@ class SfLeadEnrichmentAutomationCrew:
             ],
         )
     
-    # @agent
-    # def qa_data_verification_agent(self) -> Agent:
-    #     return Agent(
-    #         config=self.agents_config["qa_data_verification_agent"],
-    #         tools=[
-	# 			SerperDevTool()
-    #         ],
-    #     )
+    @agent
+    def qa_data_verification_agent(self) -> Agent:
+        return Agent(
+            config=self.agents_config["qa_data_verification_agent"],
+            tools=[
+				SerperDevTool()
+            ],
+        )
     
-    # @agent
-    # def salesforce_integration_agent(self) -> Agent:
-    #     enterprise_actions_tool = CrewaiEnterpriseTools(
-    #         enterprise_token=os.getenv("CREWAI_ENTERPRISE_TOOLS_KEY"),
-    #         actions_list=[
-    #             "salesforce_search_records_lead",
-    #             # "salesforce_update_record_lead",
+    @agent
+    def salesforce_integration_agent(self) -> Agent:
+        enterprise_actions_tool = CrewaiEnterpriseTools(
+            enterprise_token=os.getenv("CREWAI_ENTERPRISE_TOOLS_KEY"),
+            actions_list=[
+                "salesforce_search_records_lead",
+                # "salesforce_update_record_lead",
                 
-    #         ],
-    #     )
+            ],
+        )
         
-    #     return Agent(
-    #         config=self.agents_config["salesforce_integration_agent"],
+        return Agent(
+            config=self.agents_config["salesforce_integration_agent"],
             
             
-    #         tools=[
-	# 			*enterprise_actions_tool
-    #         ],
-    #         reasoning=False,
-    #         max_reasoning_attempts=None,
-    #         inject_date=True,
-    #         allow_delegation=False,
-    #         max_iter=25,
-    #         max_rpm=None,
-    #         max_execution_time=None,
-    #         llm=LLM(
-    #             model="gpt-4.1-mini",
-    #             temperature=0.7,
-    #         ),
+            tools=[
+				*enterprise_actions_tool
+            ],
+            reasoning=False,
+            max_reasoning_attempts=None,
+            inject_date=True,
+            allow_delegation=False,
+            max_iter=25,
+            max_rpm=None,
+            max_execution_time=None,
+            llm=LLM(
+                model="gpt-4.1-mini",
+                temperature=0.7,
+            ),
             
-    #     )
+        )
     
     
     @task
@@ -95,19 +95,19 @@ class SfLeadEnrichmentAutomationCrew:
             config=self.tasks_config["enrich_missing_lead_fields"],
         )
     
-    # @task
-    # def validate_enriched_lead_data(self) -> Task:
-    #     return Task(
-    #         config=self.tasks_config["validate_enriched_lead_data"],
-    #     )
+    @task
+    def validate_enriched_lead_data(self) -> Task:
+        return Task(
+            config=self.tasks_config["validate_enriched_lead_data"],
+        )
     
-    # @task
-    # def update_leads_and_mark_as_reviewed(self) -> Task:
-    #     return Task(
-    #         config=self.tasks_config["update_leads_and_mark_as_reviewed"],
-    #         markdown=False,
+    @task
+    def update_leads_and_mark_as_reviewed(self) -> Task:
+        return Task(
+            config=self.tasks_config["update_leads_and_mark_as_reviewed"],
+            markdown=False,
             
-    #     )
+        )
     
 
     @crew
