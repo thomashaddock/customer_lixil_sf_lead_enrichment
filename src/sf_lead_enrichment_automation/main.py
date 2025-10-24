@@ -7,17 +7,6 @@ from typing import Dict, Any
 
 from sf_lead_enrichment_automation.crew import SfLeadEnrichmentAutomationCrew
 
-# # Configure logging
-# logging.basicConfig(
-#     level=logging.INFO,
-#     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-#     handlers=[
-#         logging.FileHandler('sf_lead_enrichment.log'),
-#         logging.StreamHandler()
-#     ]
-# )
-# logger = logging.getLogger(__name__)
-
 def run():
     """
     Run the crew to process new leads in Salesforce.

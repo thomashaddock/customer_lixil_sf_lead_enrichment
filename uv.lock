@@ -3768,6 +3768,7 @@ name = "sf-lead-enrichment-automation"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "crewai" },
     { name = "crewai-tools" },
     { name = "google-auth" },
     { name = "google-cloud-aiplatform" },
@@ -3776,6 +3777,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "crewai", specifier = ">=0.186.1" },
     { name = "crewai-tools", specifier = ">=0.71.0" },
     { name = "google-auth", specifier = ">=2.23.0" },
     { name = "google-cloud-aiplatform", specifier = ">=1.38.0" },
