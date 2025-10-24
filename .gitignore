@@ -1,0 +1,21 @@
+# OS/macOS
+.DS_Store
+
+# Virtual environments and environment files
+.env
+
+
+# Python bytecode and cache
+__pycache__/
+
+
+# Logs and temp files
+*.log
+logs/
+.cache/
+tmp/
+temp/
+
+# uv (Python packaging/build tool)
+# Keep uv.lock committed
+.uv/
