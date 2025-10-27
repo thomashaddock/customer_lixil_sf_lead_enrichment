@@ -2,39 +2,39 @@
 scan_for_new_leads_in_salesforce:
   agent: lead_ingestion_agent
   description: |
-    Find up to 10 leads with Status = 'New' in Salesforce and extract all fields.
+    Find up to 5 leads with Status = 'New' in Salesforce and extract all fields.
 
     Extract these fields: Name, Title, Email, Phone, Role__c, Industry, Company, Address, Website, Lead_Source_Site__c, AnnualRevenue, Annual_Number_of_Homes__c, Lead_Score__c
 
-    Return null for empty fields. Only process 10 records. 
+    Return null for empty fields. Only process 5 records. 
 
   expected_output: |
-    JSON object with lead_id and all fields (null if empty).
+    JSON array containing up to 5 lead objects, each with lead_id and all fields (null if empty).
 
 
 enrich_missing_lead_fields:
   agent: lead_enrichment_agent
   description: |
-    Enrich null fields using web search. Do not overwrite existing data.
+    Enrich null fields for all leads using web search. Process each lead individually. Do not overwrite existing data.
 
     Use SERPER and web scraping to find: Title, Role__c, Industry, Website, Address, AnnualRevenue, Annual_Number_of_Homes__c.
 
   expected_output: |
-    JSON object with enriched fields filled in.
+    JSON array with all leads containing enriched fields filled in.
 
 
 validate_enriched_lead_data:
   agent: qa_data_verification_agent
   description: |
-    Verify enriched data accuracy. Check for inconsistencies and flag unreliable fields.
+    Verify enriched data accuracy for all leads. Check for inconsistencies and flag unreliable fields.
 
   expected_output: |
-    JSON object with validated fields.
+    JSON array with all leads containing validated fields.
 
 score_lead_quality:
   agent: lead_scoring_agent
   description: |
-    Calculate Lead_Score__c using this scoring:
+    Calculate Lead_Score__c for all leads using this scoring:
 
     Basic Info: First/Last Name (5 each), Title (5), Company (5), Address (10), Email (5), Phone (5), Website (5)
     Business: Annual_Number_of_Homes__c (0-10), Employees (0-5)  
@@ -47,12 +47,12 @@ score_lead_quality:
     IMPORTANT: Return the score as a whole number (integer) for Salesforce Number(18,0) field.
 
   expected_output: |
-    JSON object with Score field (integer 0-100) and scoring breakdown.
+    JSON array with all leads containing Score field (integer 0-100) and scoring breakdown.
 
 update_leads_and_mark_as_reviewed:
   agent: salesforce_integration_agent
   description: |
-    Update Salesforce with these exact field mappings:
+    Update Salesforce for all leads with these exact field mappings:
 
     Standard fields: Title, Email, Phone, Industry, Website, Street, City, State, PostalCode, CountryCode
     Custom fields: Role__c, AnnualRevenue, Annual_Number_of_Homes__c, Lead_Score__c, AI_Enriched__c, Status
@@ -78,8 +78,10 @@ update_leads_and_mark_as_reviewed:
     - Test with minimal field set first (just one field at a time)
     
     NOTE: If Role__c enum fails, skip it and continue with other fields.
+    
+    Process all leads in the batch and provide individual status for each.
 
   expected_output: |
-    Report showing updated fields and confirmations.
+    Report showing updated fields and confirmations for all processed leads.
 
 
