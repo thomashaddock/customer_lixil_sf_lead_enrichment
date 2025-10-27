@@ -97,19 +97,19 @@ class SfLeadEnrichmentAutomationCrew:
     #         ],
     #     )
         
-        return Agent(
-            config=self.agents_config["salesforce_integration_agent"],
-            tools=[
-				*enterprise_actions_tool
-            ],
-            reasoning=False,
-            max_reasoning_attempts=None,
-            inject_date=True,
-            allow_delegation=False,
-            max_iter=25,
-            llm=google_vertex_llm(),
+    #     return Agent(
+    #         config=self.agents_config["salesforce_integration_agent"],
+    #         tools=[
+	#			*enterprise_actions_tool
+    #         ],
+    #         reasoning=False,
+    #         max_reasoning_attempts=None,
+    #         inject_date=True,
+    #         allow_delegation=False,
+    #         max_iter=25,
+    #         llm=google_vertex_llm(),
             
-        )
+    #     )
     
     @task
     def scan_for_new_leads_in_salesforce(self) -> Task:
@@ -154,9 +154,3 @@ class SfLeadEnrichmentAutomationCrew:
             tracing=True,
             llm=google_vertex_llm(), 
         )
-
-    def _load_response_format(self, name):
-        with open(os.path.join(self.base_directory, "config", f"{name}.json")) as f:
-            json_schema = json.loads(f.read())
-
-        return SchemaConverter.build(json_schema)
