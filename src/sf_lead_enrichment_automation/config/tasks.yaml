@@ -49,37 +49,37 @@ score_lead_quality:
   expected_output: |
     JSON object with Score field (integer 0-100) and scoring breakdown.
 
-update_leads_and_mark_as_reviewed:
-  agent: salesforce_integration_agent
-  description: |
-    Update Salesforce with these exact field mappings:
+# update_leads_and_mark_as_reviewed:
+#   agent: salesforce_integration_agent
+#   description: |
+#     Update Salesforce with these exact field mappings:
 
-    Standard fields: Title, Email, Phone, Industry, Website, Street, City, State, PostalCode, CountryCode
-    Custom fields: Role__c, AnnualRevenue, Annual_Number_of_Homes__c, Lead_Score__c, AI_Enriched__c, Status
+#     Standard fields: Title, Email, Phone, Industry, Website, Street, City, State, PostalCode, CountryCode
+#     Custom fields: Role__c, AnnualRevenue, Annual_Number_of_Homes__c, Lead_Score__c, AI_Enriched__c, Status
 
-    CRITICAL FIELD UPDATES:
-    - Status: Use 'Enriched'
-    - AI_Enriched__c: Set to true (boolean value for checkbox)
-    - Lead_Score__c: Use whole number only (no decimals) - round the score to nearest integer
-    - AnnualRevenue: numerical string only
-    - CountryCode: 'US'
+#     CRITICAL FIELD UPDATES:
+#     - Status: Use 'Enriched'
+#     - AI_Enriched__c: Set to true (boolean value for checkbox)
+#     - Lead_Score__c: Use whole number only (no decimals) - round the score to nearest integer
+#     - AnnualRevenue: numerical string only
+#     - CountryCode: 'US'
     
-    DATA TYPE REQUIREMENTS:
-    - Status: Must match exact picklist value (case-sensitive)
-    - AI_Enriched__c: Boolean true/false
-    - Lead_Score__c: Integer only (Number(18,0) field)
-    - Industry: Must be from picklist (Education, Government/Military, Healthcare, Hospitality, Mixed Use Dev, Multi Family, Office Building, Prison, Religious/Cultural Facilities, Restaurant/Retail, Ship, Single Family, Stadium/Entertainment). If industry value doesn't match exactly, select the most relevant choice from the picklist.
-    - Role__c: Must be from picklist (Architect, Builder, Civil Engineer, Contractor, Developer, Engineer, General Contractor, General Manager, Installer/Plumber, Mechanical Contractor, Mechanical Engineer, Property Manager, Structural Engineer, Owner, Project Manager, Purchaser/Buyer). If role value doesn't match exactly, select the most relevant choice from the picklist.
+#     DATA TYPE REQUIREMENTS:
+#     - Status: Must match exact picklist value (case-sensitive)
+#     - AI_Enriched__c: Boolean true/false
+#     - Lead_Score__c: Integer only (Number(18,0) field)
+#     - Industry: Must be from picklist (Education, Government/Military, Healthcare, Hospitality, Mixed Use Dev, Multi Family, Office Building, Prison, Religious/Cultural Facilities, Restaurant/Retail, Ship, Single Family, Stadium/Entertainment). If industry value doesn't match exactly, select the most relevant choice from the picklist.
+#     - Role__c: Must be from picklist (Architect, Builder, Civil Engineer, Contractor, Developer, Engineer, General Contractor, General Manager, Installer/Plumber, Mechanical Contractor, Mechanical Engineer, Property Manager, Structural Engineer, Owner, Project Manager, Purchaser/Buyer). If role value doesn't match exactly, select the most relevant choice from the picklist.
     
     
-    DEBUGGING STEPS:
-    - If update fails, check field-level security permissions
-    - Verify the exact API field names match Salesforce exactly
-    - Test with minimal field set first (just one field at a time)
+#     DEBUGGING STEPS:
+#     - If update fails, check field-level security permissions
+#     - Verify the exact API field names match Salesforce exactly
+#     - Test with minimal field set first (just one field at a time)
     
-    NOTE: If Role__c enum fails, skip it and continue with other fields.
+#     NOTE: If Role__c enum fails, skip it and continue with other fields.
 
-  expected_output: |
-    Report showing updated fields and confirmations.
+#   expected_output: |
+#     Report showing updated fields and confirmations.
 
 

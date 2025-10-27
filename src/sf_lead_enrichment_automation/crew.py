@@ -86,16 +86,16 @@ class SfLeadEnrichmentAutomationCrew:
             llm=google_vertex_llm(),
         )
     
-    @agent
-    def salesforce_integration_agent(self) -> Agent:
-        enterprise_actions_tool = CrewaiEnterpriseTools(
-            enterprise_token=os.getenv("CREWAI_ENTERPRISE_TOOLS_KEY"),
-            actions_list=[
-                "salesforce_search_records_lead",
-                "salesforce_update_record_lead",
+    # @agent
+    # def salesforce_integration_agent(self) -> Agent:
+    #     enterprise_actions_tool = CrewaiEnterpriseTools(
+    #         enterprise_token=os.getenv("CREWAI_ENTERPRISE_TOOLS_KEY"),
+    #         actions_list=[
+    #             "salesforce_search_records_lead",
+    #             "salesforce_update_record_lead",
                 
-            ],
-        )
+    #         ],
+    #     )
         
         return Agent(
             config=self.agents_config["salesforce_integration_agent"],
@@ -135,13 +135,13 @@ class SfLeadEnrichmentAutomationCrew:
             config=self.tasks_config["score_lead_quality"],
         )
     
-    @task
-    def update_leads_and_mark_as_reviewed(self) -> Task:
-        return Task(
-            config=self.tasks_config["update_leads_and_mark_as_reviewed"],
-            markdown=False,
+    # @task
+    # def update_leads_and_mark_as_reviewed(self) -> Task:
+    #     return Task(
+    #         config=self.tasks_config["update_leads_and_mark_as_reviewed"],
+    #         markdown=False,
             
-        )
+    #     )
 
     @crew
     def crew(self) -> Crew:
